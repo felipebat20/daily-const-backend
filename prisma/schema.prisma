@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id String @id @default(uuid())
+  name String
+  password String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tasks Tasks[]
+  projects Projects[]
+  streaks Streaks[]
+}
+
+model Tasks {
+  id String @id @default(uuid())
+  description String
+  user_id String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions FocusedSessions[]
+  user Users @relation(fields: [user_id], references: [id])
+}
+
+model Projects {
+  id String @id @default(uuid())
+  name String
+  user_id String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user Users @relation(fields: [user_id], references: [id])
+  streaks StreakProjects[]
+  sessions FocusedSessions[]
+}
+
+model Streaks {
+  id String @id @default(uuid())
+  name String
+  user_id String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user Users @relation(fields: [user_id], references: [id])
+  projects StreakProjects[]
+}
+
+model StreakProjects {
+  name String
+  streak_id String
+  project_id String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  streaks Streaks @relation(fields: [streak_id], references: [id])
+  projects Projects @relation(fields: [project_id], references: [id])
+
+  @@id([streak_id, project_id])
+}
+
+model FocusedSessions {
+  id String @id @default(uuid())
+  name String
+  task_id String
+  project_id String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  task Tasks @relation(fields: [task_id], references: [id])
+  project Projects? @relation(fields: [project_id], references: [id])
+}
