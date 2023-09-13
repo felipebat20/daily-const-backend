@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { hash } from 'bcryptjs';
 
+import { exclude } from '../helpers/exclude';
+import { createUser } from "../services/AuthService";
+
 const prisma = new PrismaClient();
 
 export class AuthController {
@@ -17,9 +20,13 @@ export class AuthController {
     const hash_password = await hash(password, 8);
 
     try {
-      const user = await prisma.users.create({ data: { name, email, password: hash_password }})
+      const user = await createUser({
+        name,
+        password: hash_password,
+        email,
+      });
 
-      res.status(201).send(user);
+      res.status(201).send(exclude(user, ['password']));
     } catch (err) {
       res.status(400).send(err);
     }
