@@ -11,6 +11,4 @@ const port = process.env.APP_PORT || 8000;
 
 routes(app);
 
-app.listen(port, () => {
-  console.log(`Server is Fire at http://localhost:${port}`);
-});
+app.listen(port);
