@@ -3,15 +3,24 @@ import { PrismaClient } from "@prisma/client";
 import { hash } from 'bcryptjs';
 
 import { exclude } from '../helpers/exclude';
-import { createUser } from "../services/AuthService";
+import { createUser, loginUser } from "../services/AuthService";
 
-const prisma = new PrismaClient();
+class LoginError {
 
+}
 export class AuthController {
   static async login(req: Request, res: Response) {
     const { email, password } = req.body;
 
-    res.json({ email, password });
+    try {
+      const data = await loginUser({ email, password });
+
+      res.status(201).send(data);
+    } catch (err) {
+      console.log(err);
+
+      res.status(400).send({ error: err });
+    }
   }
 
   static async register(req: Request, res: Response) {
