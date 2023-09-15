@@ -3,11 +3,8 @@ import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { AppError } from '@exceptions/AppError';
 import { HttpCode } from '@enum/httpStatusCodes';
-// import dotenv from 'dotenv';
 
 const prisma = new PrismaClient();
-
-// dotenv.config();
 
 interface User {
   name: string
