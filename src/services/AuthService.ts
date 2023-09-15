@@ -1,6 +1,8 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
+import { AppError } from '@exceptions/AppError';
+import { HttpCode } from '@enum/httpStatusCodes';
 // import dotenv from 'dotenv';
 
 const prisma = new PrismaClient();
@@ -24,16 +26,22 @@ export const loginUser = async (dto: UserLogin) => {
   const user = await prisma.users.findUnique({ where: { email } });
 
   if (! user) {
-    throw new Error('User not found!');
+    throw new AppError({
+      description: 'Email or password invalid',
+      httpCode: HttpCode.BAD_REQUEST,
+      isOperational: true,
+    });
   }
 
   const same_password = await compare(password, user.password);
 
   if (! same_password) {
-    throw new Error('Email or password invalid');
+    throw new AppError({
+      description: 'Email or password invalid',
+      httpCode: HttpCode.BAD_REQUEST,
+      isOperational: true,
+    });
   }
-
-  console.log(process.env.JWT_SECRET);
 
   const token = sign({
     id: user.id,

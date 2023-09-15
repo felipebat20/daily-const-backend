@@ -1,25 +1,24 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
 import { hash } from 'bcryptjs';
 
-import { exclude } from '../helpers/exclude';
-import { createUser, loginUser } from "../services/AuthService";
+import { exclude } from '@helpers/exclude';
+import { createUser, loginUser } from "@services/AuthService";
+import { errorHandler } from "@exceptions/ErrorHandler";
 
-class LoginError {
-
-}
 export class AuthController {
   static async login(req: Request, res: Response) {
-    const { email, password } = req.body;
-
     try {
+      const { email, password } = req.body;
+
       const data = await loginUser({ email, password });
 
       res.status(201).send(data);
-    } catch (err) {
-      console.log(err);
+    } catch(err) {
+      if (err instanceof Error) {
+        errorHandler.handleError(err, res)
+      }
 
-      res.status(400).send({ error: err });
+      res.status(500).send('Internal server error')
     }
   }
 
