@@ -11,7 +11,5 @@ export default (app : Application) => {
     express.json(),
     auth,
     user,
-  ).use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    errorHandler.handleError(err, res);
-  });
+  )
 }
