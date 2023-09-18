@@ -21,7 +21,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization;
 
   if (! token) {
-    res.status(HttpCode.UNAUTHENTICATED).send({ message: 'Missing access token' });
+    return res.status(HttpCode.UNAUTHENTICATED).send({ message: 'Missing access token' });
   }
 
   const [, accesstoken] = token?.split(" ") || '';

@@ -5,11 +5,13 @@ import { errorHandler } from '@exceptions/ErrorHandler';
 
 const auth = require('./AuthRoute');
 const user = require('./UserRoute');
+const task = require('./TaskRoute');
 
 export default (app : Application) => {
   app.use(
     express.json(),
     auth,
     user,
+    task,
   )
 }

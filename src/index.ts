@@ -2,7 +2,6 @@ import express, { Express, Request, Response , Application } from 'express';
 import dotenv from 'dotenv';
 import http from 'http';
 import { createHttpTerminator } from 'http-terminator';
-import './process';
 
 import routes from './routes';
 //For env File
@@ -14,6 +13,8 @@ export const server = http.createServer(app);
 export const httpTerminator = createHttpTerminator({
   server,
 });
+
+import './process';
 
 routes(app);
 
