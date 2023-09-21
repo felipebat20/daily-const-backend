@@ -8,4 +8,4 @@ router
   .post('/login', AuthController.login)
   .post('/register', AuthController.register);
 
-module.exports = router;
+export default router;

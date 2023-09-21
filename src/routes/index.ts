@@ -1,11 +1,10 @@
 import * as express from 'express';
 import { Application } from 'express';
 
-import { errorHandler } from '@exceptions/ErrorHandler';
-
-const auth = require('./AuthRoute');
-const user = require('./UserRoute');
-const task = require('./TaskRoute');
+import auth from'./Auth.route';
+import user from'./User.route';
+import task from'./Task.route';
+import project from'./Project.route';
 
 export default (app : Application) => {
   app.use(
@@ -13,5 +12,6 @@ export default (app : Application) => {
     auth,
     user,
     task,
-  )
-}
+    project,
+  );
+};

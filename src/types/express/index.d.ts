@@ -1,11 +1,11 @@
 // to make the file a module and avoid the TypeScript error
-export {}
+export {};
 
 
 interface User {
-  id: String
-  name: String
-  email: String
+  id: string
+  name: string
+  email: string
   createdAt: Date
   updatedAt: Date
 }

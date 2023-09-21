@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { TaskController } from '../controllers/TaskController';
+import { TaskController } from '@controllers/TaskController';
 const router = Router();
 
 router
@@ -10,4 +10,4 @@ router
   .delete('/tasks/:id', TaskController.delete)
   .put('/tasks/:id', TaskController.update);
 
-module.exports = router;
+  export default router;

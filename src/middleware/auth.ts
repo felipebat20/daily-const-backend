@@ -1,7 +1,7 @@
-import { HttpCode } from "@enum/httpStatusCodes";
-import { Request, Response, NextFunction } from "express"
-import { decode, verify } from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
+import { HttpCode } from '@enum/httpStatusCodes';
+import { Request, Response, NextFunction } from 'express';
+import { decode, verify } from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -10,9 +10,9 @@ interface JwtPayload {
 }
 
 interface User {
-  id: String
-  name: String
-  email: String
+  id: string
+  name: string
+  email: string
   createdAt: Date
   updatedAt: Date
 }
@@ -24,7 +24,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     return res.status(HttpCode.UNAUTHENTICATED).send({ message: 'Missing access token' });
   }
 
-  const [, accesstoken] = token?.split(" ") || '';
+  const [, accesstoken] = token?.split(' ') || '';
 
   try {
     await verify(accesstoken, process.env.JWT_SECRET || '');
@@ -33,8 +33,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     req.user = await prisma.users.findUnique({ where: { id } }) as User;
 
-    next()
+    next();
   } catch (err) {
     res.status(HttpCode.UNAUTHENTICATED).send({ message: 'unauthenticated' });
   }
-}
+};

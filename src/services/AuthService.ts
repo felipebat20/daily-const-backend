@@ -51,18 +51,15 @@ export const loginUser = async (dto: UserLogin) => {
 };
 
 export const createUser = async (dto: User) => {
-  try {
-    const { name, email, password } = dto;
-    const user = await prisma.users.create({
-      data: {
-        name,
-        email,
-        password
-      }
-    });
+  const { name, email, password } = dto;
 
-    return user;
-  } catch (err) {
-    throw err;
-  }
-}
+  const user = await prisma.users.create({
+    data: {
+      name,
+      email,
+      password
+    }
+  });
+
+  return user;
+};

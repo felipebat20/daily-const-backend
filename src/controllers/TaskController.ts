@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
-import { createTask, deleteTask, findAllUserTasks, findTask, updateTask } from "@services/TaskService";
-import { HttpCode } from "@enum/httpStatusCodes";
-import { errorHandler } from "@exceptions/ErrorHandler";
-import { AppError } from "@exceptions/AppError";
+import { createTask, deleteTask, findAllUserTasks, findTask, updateTask } from '@services/TaskService';
+import { HttpCode } from '@enum/httpStatusCodes';
+import { errorHandler } from '@exceptions/ErrorHandler';
+import { AppError } from '@exceptions/AppError';
 
 export class TaskController {
   static async index(req: Request, res: Response) {
@@ -18,12 +18,16 @@ export class TaskController {
     const { user: { id = '' } = {} } = req;
     const { id: task_id } = req.params;
 
-    const tasks = await findTask({
+    const task = await findTask({
       user_id: id as string,
       task_id,
     });
 
-    return res.status(HttpCode.OK).send(tasks);
+    // if (! task) {
+    //   throw new AppError({ description: 'Task not found', httpCode: HttpCode.NOT_FOUND });
+    // }
+
+    return res.status(HttpCode.OK).send(task);
   }
 
   static async update(req: Request, res: Response) {

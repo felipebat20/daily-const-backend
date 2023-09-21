@@ -24,6 +24,6 @@ export class AppError extends Error {
       this.isOperational = args.isOperational;
     }
 
-    Error.captureStackTrace(this)
+    // Error.captureStackTrace(this)
   }
 }

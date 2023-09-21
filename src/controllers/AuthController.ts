@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import { hash } from 'bcryptjs';
 
 import { exclude } from '@helpers/exclude';
-import { createUser, loginUser } from "@services/AuthService";
-import { errorHandler } from "@exceptions/ErrorHandler";
+import { createUser, loginUser } from '@services/AuthService';
+import { errorHandler } from '@exceptions/ErrorHandler';
 
 export class AuthController {
   static async login(req: Request, res: Response) {
@@ -15,10 +15,10 @@ export class AuthController {
       res.status(201).send(data);
     } catch(err) {
       if (err instanceof Error) {
-        errorHandler.handleError(err, res)
+        errorHandler.handleError(err, res);
       }
 
-      res.status(500).send('Internal server error')
+      res.status(500).send('Internal server error');
     }
   }
 

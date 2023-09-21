@@ -1,6 +1,6 @@
 import { HttpCode } from '@enum/httpStatusCodes';
 import { AppError } from '@exceptions/AppError';
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -13,7 +13,7 @@ interface TaskDto {
 export const findAllUserTasks = async (dto: { user_id: string }) => {
   const { user_id } = dto;
 
-  const tasks = prisma.tasks.findMany({ where: { user_id }})
+  const tasks = prisma.tasks.findMany({ where: { user_id }});
 
   return tasks;
 };
@@ -21,10 +21,17 @@ export const findAllUserTasks = async (dto: { user_id: string }) => {
 export const findTask = async (dto: { user_id: string, task_id: string }) => {
   const { user_id, task_id } = dto;
 
-  const task = prisma.tasks.findUnique({
+  const task = await prisma.tasks.findUnique({
     where: { user_id, id: task_id },
     include: { sessions: true },
   });
+
+  if (! task) {
+    throw new AppError({
+      description: 'Task not found',
+      httpCode: HttpCode.NOT_FOUND,
+    });
+  }
 
   return task;
 };
@@ -44,8 +51,6 @@ export const deleteTask = async (dto: { user_id: string, task_id: string }) => {
   const { user_id, task_id } = dto;
 
   const task =  await prisma.tasks.findUnique({ where: { id: task_id }});
-
-  console.log(task);
 
   if (! task) {
     throw new AppError({

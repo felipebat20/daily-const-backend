@@ -29,8 +29,6 @@ class ErrorHandler {
       response.status(HttpCode.INTERNAL_SERVER).json({ message: 'Internal server error' });
     }
 
-    console.log('Application encoutered an untrusted error');
-    console.log('error');
     exitHandler.handleExit(1);
   }
 }
