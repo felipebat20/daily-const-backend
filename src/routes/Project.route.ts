@@ -7,9 +7,9 @@ const projectController = new ProjectController();
 const router = Router();
 router
   .get('/projects', projectController.index)
-  .post('/projects', projectController.store);
-  // .get('/project/:id', ProjectController.show)
-  // .delete('/project/:id', ProjectController.delete)
-  // .put('/project/:id', ProjectController.update);
+  .post('/projects', projectController.store)
+  .get('/projects/:id', projectController.show)
+  .delete('/projects/:id', projectController.delete)
+  .put('/projects/:id', projectController.update);
 
   export default router;
