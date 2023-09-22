@@ -5,6 +5,7 @@ import { ProjectController } from '@controllers/ProjectController';
 const projectController = new ProjectController();
 
 const router = Router();
+
 router
   .get('/projects', projectController.index)
   .post('/projects', projectController.store)

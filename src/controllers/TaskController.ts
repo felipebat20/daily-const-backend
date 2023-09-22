@@ -18,16 +18,20 @@ export class TaskController {
     const { user: { id = '' } = {} } = req;
     const { id: task_id } = req.params;
 
-    const task = await findTask({
-      user_id: id as string,
-      task_id,
-    });
+    try {
+      const task = await findTask({
+        user_id: id as string,
+        task_id,
+      });
 
-    // if (! task) {
-    //   throw new AppError({ description: 'Task not found', httpCode: HttpCode.NOT_FOUND });
-    // }
+      return res.status(HttpCode.OK).send(task);
+    } catch(err) {
+      if (err instanceof AppError) {
+        return res.status(err.httpCode).send({ message: err.message });
+      }
 
-    return res.status(HttpCode.OK).send(task);
+      return res.status(500).send({ message: 'internal server error' });
+    }
   }
 
   static async update(req: Request, res: Response) {

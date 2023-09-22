@@ -71,7 +71,7 @@ model StreakProjects {
 
 model FocusedSessions {
   id String @id @default(uuid())
-  name String
+  time_spent Int
   task_id String
   project_id String?
   createdAt DateTime @default(now())

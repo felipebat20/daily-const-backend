@@ -5,6 +5,7 @@ import auth from'./Auth.route';
 import user from'./User.route';
 import task from'./Task.route';
 import project from'./Project.route';
+import focused_sessions from'./FocusedSessions.route';
 
 export default (app : Application) => {
   app.use(
@@ -13,5 +14,6 @@ export default (app : Application) => {
     user,
     task,
     project,
+    focused_sessions,
   );
 };
