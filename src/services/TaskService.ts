@@ -13,7 +13,7 @@ interface TaskDto {
 export const findAllUserTasks = async (dto: { user_id: string }) => {
   const { user_id } = dto;
 
-  const tasks = prisma.tasks.findMany({ where: { user_id }});
+  const tasks = await prisma.tasks.findMany({ where: { user_id }});
 
   return tasks;
 };
@@ -39,7 +39,7 @@ export const findTask = async (dto: { user_id: string, task_id: string }) => {
 export const updateTask = async (dto: { user_id: string, task_id: string, description: string }) => {
   const { user_id, task_id, description } = dto;
 
-  const task = prisma.tasks.update({
+  const task = await prisma.tasks.update({
     where: { user_id, id: task_id },
     data: { description },
   });
@@ -76,7 +76,7 @@ export const deleteTask = async (dto: { user_id: string, task_id: string }) => {
 export const createTask = async (dto: TaskDto) => {
   const { user_id, description } = dto;
 
-  const tasks = prisma.tasks.create({
+  const tasks = await prisma.tasks.create({
     data: {
       description,
       user_id,
