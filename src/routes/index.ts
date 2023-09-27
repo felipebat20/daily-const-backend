@@ -6,6 +6,7 @@ import user from'./User.route';
 import task from'./Task.route';
 import project from'./Project.route';
 import focused_sessions from'./FocusedSessions.route';
+import streaks from'./Streaks.route';
 
 export default (app : Application) => {
   app.use(
@@ -15,5 +16,6 @@ export default (app : Application) => {
     task,
     project,
     focused_sessions,
+    streaks,
   );
 };

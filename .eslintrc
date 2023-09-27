@@ -13,6 +13,7 @@
     "no-console": "error",
     "eol-last": ["error", "always"],
     "quotes": ["error", "single", { "allowTemplateLiterals": true }],
-    "semi": ["error", "always"]
+    "semi": ["error", "always"],
+    "object-curly-spacing": ["error", "always"]
   }
 }

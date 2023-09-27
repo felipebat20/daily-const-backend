@@ -45,7 +45,7 @@ class FucusedSessionsService {
   async findAllTaskFocusedSessions({ user_id, task_id }: { user_id: string, task_id: string}): Promise<FocusedSessions[]> {
     await this.validateTask({ user_id, task_id });
 
-    const focused_sessions = await prisma.focusedSessions.findMany({ where: { task_id }});
+    const focused_sessions = await prisma.focusedSessions.findMany({ where: { task_id } });
 
     return focused_sessions;
   }
