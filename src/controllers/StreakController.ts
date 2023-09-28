@@ -90,8 +90,41 @@ class StreakController {
     }
   }
 
-  async attach(req: Request, res: Response) {}
-  async detach(req: Request, res: Response) {}
+  async attach(req: Request, res: Response) {
+    const { user: { id: user_id = '' } = {}  } = req;
+    const { projects } = req.body;
+    const { streak_id } = req.params;
+
+    try {
+      const streak_project = await streakService.attachProject({ user_id, streak_id, projects });
+
+      return res.status(200).send(streak_project);
+    } catch (err) {
+      if (err instanceof AppError) {
+        return res.status(err.httpCode).send({ message: err.message });
+      }
+
+      return res.status(500).send({ message: 'internal server error' });
+    }
+  }
+
+  async detach(req: Request, res: Response) {
+    const { user: { id: user_id = '' } = {}  } = req;
+    const { projects } = req.body;
+    const { streak_id } = req.params;
+
+    try {
+      const streak_project = await streakService.detachProject({ user_id, streak_id, projects });
+
+      return res.status(200).send(streak_project);
+    } catch (err) {
+      if (err instanceof AppError) {
+        return res.status(err.httpCode).send({ message: err.message });
+      }
+
+      return res.status(500).send({ message: 'internal server error' });
+    }
+  }
 }
 
 export { StreakController };

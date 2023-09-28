@@ -4,6 +4,7 @@ import { createTask, deleteTask, findAllUserTasks, findTask, updateTask } from '
 import { HttpCode } from '@enum/httpStatusCodes';
 import { errorHandler } from '@exceptions/ErrorHandler';
 import { AppError } from '@exceptions/AppError';
+import { Task } from '../models/Task';
 
 export class TaskController {
   static async index(req: Request, res: Response) {
@@ -24,7 +25,7 @@ export class TaskController {
         task_id,
       });
 
-      return res.status(HttpCode.OK).send(task);
+      return res.status(HttpCode.OK).send(await new Task(task).with(['sessions', 'user']));
     } catch(err) {
       if (err instanceof AppError) {
         return res.status(err.httpCode).send({ message: err.message });

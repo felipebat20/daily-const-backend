@@ -58,20 +58,19 @@ model Streaks {
 
 model StreakProjects {
   name String
+  streaks Streaks @relation(fields: [streak_id], references: [id])
   streak_id String
+  projects Projects @relation(fields: [project_id], references: [id])
   project_id String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  streaks Streaks @relation(fields: [streak_id], references: [id])
-  projects Projects @relation(fields: [project_id], references: [id])
 
   @@id([streak_id, project_id])
 }
 
 model FocusedSessions {
   id String @id @default(uuid())
-  time_spent Int
   task_id String
   project_id String?
   createdAt DateTime @default(now())

@@ -13,7 +13,7 @@ interface TaskDto {
 export const findAllUserTasks = async (dto: { user_id: string }) => {
   const { user_id } = dto;
 
-  const tasks = await prisma.tasks.findMany({ where: { user_id }});
+  const tasks = await prisma.tasks.findMany({ where: { user_id } });
 
   return tasks;
 };
@@ -23,7 +23,6 @@ export const findTask = async (dto: { user_id: string, task_id: string }) => {
 
   const task = await prisma.tasks.findUnique({
     where: { user_id, id: task_id },
-    include: { sessions: true },
   });
 
   if (! task) {
@@ -50,7 +49,7 @@ export const updateTask = async (dto: { user_id: string, task_id: string, descri
 export const deleteTask = async (dto: { user_id: string, task_id: string }) => {
   const { user_id, task_id } = dto;
 
-  const task =  await prisma.tasks.findUnique({ where: { id: task_id }});
+  const task =  await prisma.tasks.findUnique({ where: { id: task_id } });
 
   if (! task) {
     throw new AppError({

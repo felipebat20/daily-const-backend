@@ -9,8 +9,8 @@ router
   .get('/streaks', streakController.index)
   .post('/streaks', streakController.store)
   .get('/streaks/:streak_id', streakController.show)
-  .post('/streaks/:streak_id/attach')
-  .delete('/streaks/:streak_id/dettach')
+  .post('/streaks/:streak_id/attach', streakController.attach)
+  .delete('/streaks/:streak_id/detach', streakController.detach)
   .put('/streaks/:streak_id', streakController.update)
   .delete('/streaks/:streak_id', streakController.delete);
 
