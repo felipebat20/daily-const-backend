@@ -20,3 +20,5 @@ export const httpTerminator = createHttpTerminator({
 routes(app);
 
 app.listen(port);
+
+export default app;
