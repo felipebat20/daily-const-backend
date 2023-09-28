@@ -9,7 +9,10 @@ import focused_sessions from'./FocusedSessions.route';
 import streaks from'./Streaks.route';
 
 export default (app : Application) => {
-  app.use(
+  app
+  .get('/', (req, res) => {
+    res.send('Hey this is my API running 🥳');
+  }).use(
     express.json(),
     auth,
     user,
@@ -17,5 +20,5 @@ export default (app : Application) => {
     project,
     focused_sessions,
     streaks,
-  );
+    );
 };
