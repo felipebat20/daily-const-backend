@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AppError } from './AppError';
-import { HttpCode } from '@enum/httpStatusCodes';
+import { HttpCode } from '../enum/httpStatusCodes';
 import { exitHandler } from '../ExitHandler';
 
 class ErrorHandler {

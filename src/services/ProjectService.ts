@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
-import { HttpCode } from '@enum/httpStatusCodes';
-import { AppError } from '@exceptions/AppError';
+import { HttpCode } from '../enum/httpStatusCodes';
+import { AppError } from '../exceptions/AppError';
 
 const prisma = new PrismaClient();
 

@@ -1,5 +1,6 @@
-import { StreakController } from '@controllers/StreakController';
 import { Router } from 'express';
+
+import { StreakController } from '../controllers/StreakController';
 
 const router = Router();
 

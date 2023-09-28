@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { StreakService } from '@services/StreakService';
-import { AppError } from '@exceptions/AppError';
+import { StreakService } from '../services/StreakService';
+import { AppError } from '../exceptions/AppError';
 
 const streakService = new StreakService();
 

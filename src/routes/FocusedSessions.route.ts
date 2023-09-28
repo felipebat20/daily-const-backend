@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { FocusedSessionsController } from '@controllers/FocusedSessionsController';
+import { FocusedSessionsController } from '../controllers/FocusedSessionsController';
 
 const router = Router();
 

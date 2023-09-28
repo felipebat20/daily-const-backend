@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { hash } from 'bcryptjs';
 
-import { exclude } from '@helpers/exclude';
-import { createUser, loginUser } from '@services/AuthService';
-import { errorHandler } from '@exceptions/ErrorHandler';
+import { exclude } from '../helpers/exclude';
+import { createUser, loginUser } from '../services/AuthService';
+import { errorHandler } from '../exceptions/ErrorHandler';
 
 export class AuthController {
   static async login(req: Request, res: Response) {

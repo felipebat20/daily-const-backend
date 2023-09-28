@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { FucusedSessionsService } from '@services/FucusedSessionsService';
-import { AppError } from '@exceptions/AppError';
+import { FucusedSessionsService } from '../services/FucusedSessionsService';
+import { AppError } from '../exceptions/AppError';
 
 const focusedSessionsService = new FucusedSessionsService();
 

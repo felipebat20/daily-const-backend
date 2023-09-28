@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { ProjectService } from '@services/ProjectService';
-import { AppError } from '@exceptions/AppError';
+import { ProjectService } from '../services/ProjectService';
+import { AppError } from '../exceptions/AppError';
 
 const projectService = new ProjectService();
 

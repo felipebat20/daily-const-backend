@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-import { AppError } from '@exceptions/AppError';
-import { HttpCode } from '@enum/httpStatusCodes';
+
+import { AppError } from '../exceptions/AppError';
+import { HttpCode } from '../enum/httpStatusCodes';
 
 const prisma = new PrismaClient();
 

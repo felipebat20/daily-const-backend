@@ -1,4 +1,4 @@
-import { HttpCode } from '@enum/httpStatusCodes';
+import { HttpCode } from '../enum/httpStatusCodes';
 
 interface AppErrorArgs {
   name?: string,

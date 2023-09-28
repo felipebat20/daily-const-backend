@@ -1,4 +1,4 @@
-import { HttpCode } from '@enum/httpStatusCodes';
+import { HttpCode } from '../enum/httpStatusCodes';
 import { Request, Response, NextFunction } from 'express';
 import { decode, verify } from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
