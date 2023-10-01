@@ -3,7 +3,7 @@ import { hash } from 'bcryptjs';
 
 import { exclude } from '../helpers/exclude';
 import { createUser, loginUser } from '../services/AuthService';
-import { errorHandler } from '../exceptions/ErrorHandler';
+import { AppError } from '@exceptions/AppError';
 
 export class AuthController {
   static async login(req: Request, res: Response) {
@@ -14,11 +14,11 @@ export class AuthController {
 
       res.status(201).send(data);
     } catch(err) {
-      if (err instanceof Error) {
-        errorHandler.handleError(err, res);
+      if (err instanceof AppError) {
+        return res.status(err.httpCode).send({ message: err.message });
       }
 
-      res.status(500).send('Internal server error');
+      return res.status(500).send('Internal server error');
     }
   }
 
@@ -36,7 +36,11 @@ export class AuthController {
 
       res.status(201).send(exclude(user, ['password']));
     } catch (err) {
-      res.status(400).send(err);
+      if (err instanceof AppError) {
+        return res.status(err.httpCode).send({ message: err.message });
+      }
+
+      return res.status(500).send('Internal server error');
     }
   }
 }
