@@ -3,7 +3,7 @@ import { hash } from 'bcryptjs';
 
 import { exclude } from '../helpers/exclude';
 import { createUser, loginUser } from '../services/AuthService';
-import { AppError } from '@exceptions/AppError';
+import { AppError } from '../exceptions/AppError';
 
 export class AuthController {
   static async login(req: Request, res: Response) {
