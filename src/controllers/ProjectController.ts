@@ -9,9 +9,17 @@ class ProjectController {
   async index(req: Request, res: Response) {
     const { user: { id: user_id = '' } = {} } = req;
 
-    const projects = await projectService.findAllUserProjects({ user_id });
+    try {
+      const projects = await projectService.findAllUserProjects({ user_id });
 
-    return res.status(200).send(projects);
+      return res.status(200).send(projects);
+    } catch(err) {
+      if (err instanceof AppError) {
+        return res.status(err.httpCode).send({ message: err.message });
+      }
+
+      return res.status(400).send({ message: 'bad request' });
+    }
   }
 
   async store(req: Request, res: Response) {
