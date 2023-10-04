@@ -34,8 +34,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     next();
   } catch (err) {
-    console.log(err);
-
     return res.status(HttpCode.UNAUTHENTICATED).send({ message: 'unauthenticated' });
   }
 };
