@@ -13,7 +13,7 @@ export class TaskController {
 
       const tasks = await findAllUserTasks({ user_id: id as string });
 
-      return res.status(HttpCode.OK).send(tasks);
+      return res.status(HttpCode.OK).send(await Task.collection(tasks));
     } catch (err) {
       if (err instanceof AppError) {
         return res.status(err.httpCode).send({ message: err.message });
@@ -33,7 +33,7 @@ export class TaskController {
         task_id,
       });
 
-      return res.status(HttpCode.OK).send(await new Task(task).with(['sessions', 'user']));
+      return res.status(HttpCode.OK).send(await new Task(task));
     } catch(err) {
       if (err instanceof AppError) {
         return res.status(err.httpCode).send({ message: err.message });
@@ -48,13 +48,13 @@ export class TaskController {
     const { id: task_id } = req.params;
     const { description } = req.body;
     try {
-      const tasks = await updateTask({
+      const task = await updateTask({
         user_id: id as string,
         task_id,
         description,
       });
 
-      return res.status(HttpCode.OK).send(tasks);
+      return res.status(HttpCode.OK).send(await new Task(task));
     } catch (err) {
       if (err instanceof AppError) {
         return errorHandler.handleError(err);
@@ -93,6 +93,6 @@ export class TaskController {
       description,
     });
 
-    return res.status(HttpCode.CREATED).send(task);
+    return res.status(HttpCode.CREATED).send(await new Task(task));
   }
 }

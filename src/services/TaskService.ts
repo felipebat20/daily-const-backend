@@ -22,6 +22,7 @@ export const findTask = async (dto: { user_id: string, task_id: string }) => {
 
   const task = await prisma.tasks.findUnique({
     where: { user_id, id: task_id },
+    include: { sessions: true },
   });
 
   if (! task) {
@@ -40,6 +41,7 @@ export const updateTask = async (dto: { user_id: string, task_id: string, descri
   const task = await prisma.tasks.update({
     where: { user_id, id: task_id },
     data: { description },
+    include: { sessions: true },
   });
 
   return task;
@@ -79,6 +81,7 @@ export const createTask = async (dto: TaskDto) => {
       description,
       user_id,
     },
+    include: { sessions: true },
   });
 
   return tasks;
