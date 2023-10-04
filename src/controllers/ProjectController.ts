@@ -7,9 +7,9 @@ const projectService = new ProjectService();
 
 class ProjectController {
   async index(req: Request, res: Response) {
-    const { user: { id: user_id = '' } = {} } = req;
-
     try {
+      const { user: { id: user_id = '' } = {} } = req;
+
       const projects = await projectService.findAllUserProjects({ user_id });
 
       return res.status(200).send(projects);

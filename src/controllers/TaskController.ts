@@ -8,11 +8,19 @@ import { Task } from '../models/Task';
 
 export class TaskController {
   static async index(req: Request, res: Response) {
-    const { user: { id = '' } = {} } = req;
+    try {
+      const { user: { id = '' } = {} } = req;
 
-    const tasks = await findAllUserTasks({ user_id: id as string });
+      const tasks = await findAllUserTasks({ user_id: id as string });
 
-    return res.status(HttpCode.OK).send(tasks);
+      return res.status(HttpCode.OK).send(tasks);
+    } catch (err) {
+      if (err instanceof AppError) {
+        return res.status(err.httpCode).send({ message: err.message });
+      }
+
+      return res.status(500).send({ message: 'internal server error' });
+    }
   }
 
   static async show(req: Request, res: Response) {
