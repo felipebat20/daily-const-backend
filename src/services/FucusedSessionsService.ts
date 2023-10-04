@@ -1,9 +1,9 @@
-import { FocusedSessions, PrismaClient, Tasks } from '@prisma/client';
+import { FocusedSessions, Tasks } from '@prisma/client';
 
 import { HttpCode } from '../enum/httpStatusCodes';
 import { AppError } from '../exceptions/AppError';
 
-const prisma = new PrismaClient();
+import { prisma } from '../prisma';
 
 class FucusedSessionsService {
   async findAllUserSessions({ user_id }: { user_id: string }) {

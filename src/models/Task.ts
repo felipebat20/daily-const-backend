@@ -1,6 +1,6 @@
-import { Tasks, PrismaClient } from '@prisma/client';
+import { Tasks } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import { prisma } from '../prisma';
 
 class Task {
   public task;

@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-
 import { HttpCode } from '../enum/httpStatusCodes';
 import { AppError } from '../exceptions/AppError';
 
-const prisma = new PrismaClient();
+import { prisma } from '../prisma';
 
 class ProjectService {
   async findAllUserProjects({ user_id } : { user_id: string }) {

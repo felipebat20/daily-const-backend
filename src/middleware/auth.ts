@@ -1,9 +1,8 @@
 import { HttpCode } from '../enum/httpStatusCodes';
 import { Request, Response, NextFunction } from 'express';
 import { decode, verify } from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import { prisma } from '../prisma';
 
 interface JwtPayload {
   id: string
@@ -35,6 +34,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     next();
   } catch (err) {
+    console.log(err);
+
     return res.status(HttpCode.UNAUTHENTICATED).send({ message: 'unauthenticated' });
   }
 };
