@@ -27,7 +27,6 @@ class FucusedSessionsService {
     const data = {
       time_spent,
       task: { connect: { id: task_id } },
-      project: {},
     };
 
     const session = await prisma.focusedSessions.create({
