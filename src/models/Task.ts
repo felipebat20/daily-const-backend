@@ -1,6 +1,7 @@
 import { prisma } from '../prisma';
 import { TaskInterface } from '../interfaces/ITask';
 import { SessionInterface } from '../interfaces/ISessions';
+import { Project } from '../interfaces/IProject';
 
 
 class Task {
@@ -10,6 +11,7 @@ class Task {
   public updatedAt: Date;
   public total_time_spent: number;
   public sessions: SessionInterface[];
+  public project: Project | null;
 
   constructor(task: TaskInterface) {
     this.id = task.id;
@@ -17,6 +19,7 @@ class Task {
     this.createdAt = task.createdAt;
     this.updatedAt = task.updatedAt;
     this.sessions = task.sessions || [];
+    this.project = task.project;
     this.total_time_spent = this.getTotalTimeSpent;
   }
 
@@ -42,11 +45,7 @@ class Task {
   }
 
   static async collection(tasks: TaskInterface[]) {
-    const promises = tasks.map(task => prisma.tasks.findUnique({ where: { id: task.id }, include: { sessions: true } }));
-
-    const parsed_tasks = await Promise.all(promises);
-
-    return parsed_tasks.map(task => {
+    return tasks.map(task => {
       if (task) {
         return new Task(task);
       }

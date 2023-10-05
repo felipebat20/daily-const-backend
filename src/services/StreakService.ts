@@ -12,10 +12,8 @@ class StreakService {
         user: { id: user_id }
       },
       include: {
-        projects: {
-          select: { projects: { include: { sessions: true } } }
-        }
-      }
+        projects: true,
+      },
     });
 
     return streaks;

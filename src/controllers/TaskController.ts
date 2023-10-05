@@ -46,12 +46,13 @@ export class TaskController {
   static async update(req: Request, res: Response) {
     const { user: { id = '' } = {} } = req;
     const { id: task_id } = req.params;
-    const { description } = req.body;
+    const { description, project_id } = req.body;
     try {
       const task = await updateTask({
         user_id: id as string,
         task_id,
         description,
+        project_id,
       });
 
       return res.status(HttpCode.OK).send(await new Task(task));
@@ -86,11 +87,12 @@ export class TaskController {
 
   static async store(req: Request, res: Response) {
     const { user: { id = '' } = {} } = req;
-    const { description } = req.body;
+    const { description, project_id } = req.body;
 
     const task = await createTask({
       user_id: id as string,
       description,
+      project_id,
     });
 
     return res.status(HttpCode.CREATED).send(await new Task(task));

@@ -43,9 +43,9 @@ class FocusedSessionsController {
     try {
       const { user: { id: user_id = '' } = {} } = req;
       const { task_id, session_id: focused_session_id } = req.params;
-      const { project_id, time_spent } = req.body;
+      const { time_spent } = req.body;
 
-      const session = await focusedSessionsService.updateFocusedSession({ user_id, task_id, focused_session_id, time_spent, project_id });
+      const session = await focusedSessionsService.updateFocusedSession({ user_id, task_id, focused_session_id, time_spent });
 
       res.status(200).send(session);
     } catch (err) {
@@ -60,10 +60,10 @@ class FocusedSessionsController {
   async store(req: Request, res: Response) {
     try {
       const { user: { id: user_id = '' } = {} } = req;
-      const { project_id, time_spent } = req.body;
+      const { time_spent } = req.body;
       const { task_id } = req.params;
 
-      const sessions = await focusedSessionsService.createFocusedSession({ user_id, task_id, time_spent, project_id });
+      const sessions = await focusedSessionsService.createFocusedSession({ user_id, task_id, time_spent });
 
       res.status(200).send(sessions);
     } catch (err) {

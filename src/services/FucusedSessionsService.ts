@@ -7,19 +7,17 @@ import { prisma } from '../prisma';
 
 class FucusedSessionsService {
   async findAllUserSessions({ user_id }: { user_id: string }) {
-    const sessions = await prisma.focusedSessions.findMany({ where: { task: { user_id } }, include: { task: true, project: true } });
+    const sessions = await prisma.focusedSessions.findMany({ where: { task: { user_id } }, include: { task: true } });
 
     return sessions;
   }
 
   async createFocusedSession({
     user_id,
-    project_id,
     task_id,
     time_spent,
   }: {
     user_id: string,
-    project_id: string,
     task_id: string,
     time_spent: number,
   }): Promise<FocusedSessions>
@@ -31,10 +29,6 @@ class FucusedSessionsService {
       task: { connect: { id: task_id } },
       project: {},
     };
-
-    if (project_id) {
-      data.project = { connect: { id: project_id } };
-    }
 
     const session = await prisma.focusedSessions.create({
       data,
@@ -65,14 +59,14 @@ class FucusedSessionsService {
   }
 
   async updateFocusedSession(
-    { user_id, focused_session_id, task_id, time_spent, project_id }:
-    { user_id: string, focused_session_id: string, task_id: string, time_spent: number, project_id: string, },
+    { user_id, focused_session_id, task_id, time_spent }:
+    { user_id: string, focused_session_id: string, task_id: string, time_spent: number },
   ): Promise<FocusedSessions|null>
   {
     await this.validateTask({ user_id, task_id });
     await this.validateFocusedSession({ id: focused_session_id });
 
-    const focused_session = await prisma.focusedSessions.update({ where: { id: focused_session_id }, data: { time_spent, project_id } });
+    const focused_session = await prisma.focusedSessions.update({ where: { id: focused_session_id }, data: { time_spent } });
 
     return focused_session;
   }
