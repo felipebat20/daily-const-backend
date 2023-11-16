@@ -1,5 +1,3 @@
-import { StreakProjects } from '@prisma/client';
-
 import { HttpCode } from '../enum/httpStatusCodes';
 import { AppError } from '../exceptions/AppError';
 
@@ -28,7 +26,13 @@ class StreakService {
   }
 
   async findStreak({ user_id, streak_id }: { streak_id: string, user_id: string }) {
-    const streak = await prisma.streaks.findUnique({ where: { id: streak_id, user: { id: user_id } } });
+    const streak = await prisma.streaks.findUnique({
+      where: {
+        id: streak_id,
+        user: { id: user_id }
+      },
+      include: { projects: true },
+    });
 
     if (! streak) {
       throw new AppError({ description: 'Streak not found', httpCode: HttpCode.NOT_FOUND });
@@ -38,13 +42,22 @@ class StreakService {
   }
 
   async updateStreak({ user_id, streak_id, name }: { streak_id: string, user_id: string, name: string }) {
-    const streak = await prisma.streaks.findUnique({ where: { id: streak_id, user: { id: user_id } } });
+    const streak = await prisma.streaks.findUnique({
+      where: {
+        id: streak_id,
+        user: { id: user_id }
+      },
+    });
 
     if (! streak) {
       throw new AppError({ description: 'Streak not found', httpCode: HttpCode.NOT_FOUND });
     }
 
-    const updated_streak = await prisma.streaks.update({ data: { name }, where: { id: streak_id } });
+    const updated_streak = await prisma.streaks.update({
+      data: { name },
+      where: { id: streak_id },
+      include: { projects: true },
+    });
 
     return updated_streak;
   }
@@ -78,13 +91,19 @@ class StreakService {
     }
 
     const data = projects.map(project_id => ({
-      streak_id,
-      project_id,
+      id: project_id,
     }));
 
-    const streak_projects = await prisma.streakProjects.createMany({
-      data,
-      skipDuplicates: true,
+    const streak_projects = await prisma.streaks.update({
+      where: {
+        id: streak_id,
+      },
+      data: {
+        projects: { connect: data },
+      },
+      include: {
+        projects: true,
+      },
     });
 
     return streak_projects;
@@ -97,15 +116,19 @@ class StreakService {
       throw new AppError({ description: 'Streak not found', httpCode: HttpCode.NOT_FOUND });
     }
 
-    const deleted_projects: StreakProjects[] = [];
+    const projects_data = projects.map(project_id => ({ id: project_id }));
 
-    for (const project_id of projects) {
-      const streak = await prisma.streakProjects.delete({ where: { streak_id_project_id: { project_id, streak_id } } });
+    const streak_data = await prisma.streaks.update({
+      where: { id: streak_id },
+      data: {
+        projects: {
+          disconnect: projects_data,
+        },
+      },
+      include: { projects: true },
+    });
 
-      deleted_projects.push(streak);
-    }
-
-    return deleted_projects;
+    return streak_data;
   }
 }
 

@@ -43,7 +43,7 @@ model Projects {
   updatedAt DateTime @updatedAt
 
   user Users @relation(fields: [user_id], references: [id])
-  streaks StreakProjects[]
+  streaks Streaks[]
   tasks Tasks[]
 }
 
@@ -55,19 +55,7 @@ model Streaks {
   updatedAt DateTime @updatedAt
 
   user Users @relation(fields: [user_id], references: [id])
-  projects StreakProjects[]
-}
-
-model StreakProjects {
-  streaks Streaks @relation(fields: [streak_id], references: [id])
-  streak_id String
-  projects Projects @relation(fields: [project_id], references: [id])
-  project_id String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-
-  @@id([streak_id, project_id])
+  projects Projects[]
 }
 
 model FocusedSessions {
