@@ -19,9 +19,16 @@ class StreakService {
     return streaks;
   }
 
-  async createStreak({ user_id, name }: { user_id: string, name: string }) {
+  async createStreak({ user_id, name, projects }: { user_id: string, name: string, projects: string[] }) {
+    const data = projects.map(project_id => ({ id: project_id }));
+
     const streak = await prisma.streaks.create({
-      data: { name, user: { connect: { id: user_id } } },
+      data: {
+        name,
+        user: { connect: { id: user_id } },
+        projects: { connect: data },
+      },
+      include: { projects: true },
     });
 
     return streak;
