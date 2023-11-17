@@ -1,3 +1,5 @@
+import { groupBy, omit, uniqBy } from 'lodash';
+
 import { HttpCode } from '../enum/httpStatusCodes';
 import { AppError } from '../exceptions/AppError';
 
@@ -129,6 +131,50 @@ class StreakService {
     });
 
     return streak_data;
+  }
+
+  async focusSummaries({ user_id, streak_id }: { user_id: string, streak_id: string }) {
+    const streak = await prisma.streaks.findUnique({
+      where: {
+        id: streak_id,
+        user: { id: user_id }
+      },
+      include: { projects: true },
+    });
+
+    if (! streak) {
+      throw new AppError({ description: 'Streak not found', httpCode: HttpCode.NOT_FOUND });
+    }
+
+    const projects_ids = streak.projects.map(project => ({ id: project.id }));
+
+    const focused_sessions = await prisma.focusedSessions.findMany({
+      where: {
+        task: {
+          project_id: {
+            in: projects_ids.map(project => project.id)
+          }
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      include: { task: { include: { project: true } } },
+    });
+
+    const agg_sessions = groupBy(focused_sessions, (session) => new Date(session.createdAt.toString().substring(0, 15)).getTime());
+
+    const parsed_data = Object.entries(agg_sessions).map(([key, value]) => {
+      return {
+        date: key,
+        totalFocusTime: value.map(focused => focused.time_spent).reduce((total, current_value) => current_value + total, 0),
+        totalFocusedSessions: value.length,
+        totalTasks: uniqBy(value.map(focused => omit(focused.task, 'project')), 'id').length,
+        totalProjects: uniqBy(value.map(focused => focused.task.project), 'id').length,
+        tasks: uniqBy(value.map(focused => omit(focused.task, 'project')), 'id'),
+        projects: uniqBy(value.map(focused => focused.task.project), 'id'),
+      };
+    });
+
+    return parsed_data;
   }
 }
 
