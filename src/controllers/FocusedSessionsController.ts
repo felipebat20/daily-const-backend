@@ -63,7 +63,11 @@ class FocusedSessionsController {
       const { time_spent } = req.body;
       const { task_id } = req.params;
 
-      const sessions = await focusedSessionsService.createFocusedSession({ user_id, task_id, time_spent });
+      const sessions = await focusedSessionsService.createFocusedSession({
+        user_id,
+        task_id,
+        time_spent,
+      });
 
       res.status(200).send(sessions);
     } catch (err) {

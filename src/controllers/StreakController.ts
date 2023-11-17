@@ -125,6 +125,23 @@ class StreakController {
       return res.status(500).send({ message: 'internal server error' });
     }
   }
+
+  async focus_summaries(req: Request, res: Response) {
+    const { user: { id: user_id = '' } = {}  } = req;
+    const { streak_id } = req.params;
+
+    try {
+      const focused_summaries = await streakService.focusSummaries({ user_id, streak_id });
+
+      return res.status(200).send(focused_summaries);
+    } catch (err) {
+      if (err instanceof AppError) {
+        return res.status(err.httpCode).send({ message: err.message });
+      }
+
+      return res.status(500).send({ message: 'internal server error' });
+    }
+  }
 }
 
 export { StreakController };
