@@ -199,7 +199,7 @@ class StreakService {
       include: { task: { include: { project: true } } },
     });
 
-    const agg_sessions = groupBy(focused_sessions, (session) => new Date(session.createdAt.toString().substring(0, 15)).getTime());
+    const agg_sessions = groupBy(focused_sessions, (session) => new Date(new Date(session.createdAt).toString().substring(0, 15)).getTime());
 
     const parsed_data = Object.entries(agg_sessions).map(([key, value]) => {
       return {
