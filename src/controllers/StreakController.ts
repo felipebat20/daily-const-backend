@@ -62,10 +62,15 @@ class StreakController {
   async update(req: Request, res: Response) {
     const { user: { id: user_id = '' } = {}  } = req;
     const { streak_id } = req.params;
-    const { name } = req.body;
+    const { name, projects } = req.body;
 
     try {
-      const streak = await streakService.updateStreak({ user_id, streak_id, name });
+      const streak = await streakService.updateStreak({
+        user_id,
+        streak_id,
+        name,
+        projects,
+      });
 
       return res.status(201).send(streak);
     } catch (err) {
