@@ -19,9 +19,16 @@ class StreakService {
     return streaks;
   }
 
-  async createStreak({ user_id, name }: { user_id: string, name: string }) {
+  async createStreak({ user_id, name, projects }: { user_id: string, name: string, projects: string[] }) {
+    const data = projects.map(project_id => ({ id: project_id }));
+
     const streak = await prisma.streaks.create({
-      data: { name, user: { connect: { id: user_id } } },
+      data: {
+        name,
+        user: { connect: { id: user_id } },
+        projects: { connect: data },
+      },
+      include: { projects: true },
     });
 
     return streak;
@@ -43,16 +50,48 @@ class StreakService {
     return streak;
   }
 
-  async updateStreak({ user_id, streak_id, name }: { streak_id: string, user_id: string, name: string }) {
+  async updateStreak({ user_id, streak_id, name, projects }: { streak_id: string, user_id: string, name: string, projects: undefined | string[] }) {
     const streak = await prisma.streaks.findUnique({
       where: {
         id: streak_id,
         user: { id: user_id }
       },
+      include: { projects: true },
     });
 
     if (! streak) {
       throw new AppError({ description: 'Streak not found', httpCode: HttpCode.NOT_FOUND });
+    }
+
+    if (projects) {
+      const disconnected_projects = streak.projects.map(project => project.id).filter(project_id => ! projects.includes(project_id));
+      const projects_to_connect = projects.filter(proj => {
+        const streak_projects = streak.projects.map(project => project.id);
+
+        return ! streak_projects.includes(proj);
+      });
+
+      if (disconnected_projects.length) {
+        await prisma.streaks.update({
+          where: { id: streak_id },
+          data: {
+            projects: {
+              disconnect: disconnected_projects.map(project_id => ({ id: project_id })),
+            },
+          },
+        });
+      }
+
+      if (projects_to_connect.length) {
+        await prisma.streaks.update({
+          where: { id: streak_id },
+          data: {
+            projects: {
+              connect: projects_to_connect.map(project_id => ({ id: project_id })),
+            },
+          },
+        });
+      }
     }
 
     const updated_streak = await prisma.streaks.update({
