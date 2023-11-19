@@ -202,9 +202,8 @@ class StreakService {
     const agg_sessions = groupBy(focused_sessions, (session) => {
       const created_date = session.createdAt;
 
-      created_date.setHours(0, 0, 0);
 
-      return created_date.getTime();
+      return `${created_date.getFullYear()}-${created_date.getMonth()}-${created_date.getDate()}`;
     });
 
     const parsed_data = Object.entries(agg_sessions).map(([key, value]) => {
