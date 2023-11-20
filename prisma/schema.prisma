@@ -65,5 +65,5 @@ model FocusedSessions {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  task Tasks @relation(fields: [task_id], references: [id])
+  task Tasks @relation(fields: [task_id], references: [id], onDelete: Cascade)
 }
