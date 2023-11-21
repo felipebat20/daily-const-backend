@@ -44,7 +44,7 @@ export const loginUser = async (dto: UserLogin) => {
     id: user.id,
     email: user.email,
   }, process.env.JWT_SECRET || '', {
-    expiresIn: 86400
+    expiresIn: (86400 * 7)
   });
 
   return { token };
