@@ -10,10 +10,23 @@ interface TaskDto {
   project_id: string,
 }
 
-export const findAllUserTasks = async (dto: { user_id: string }) => {
-  const { user_id } = dto;
+export const findAllUserTasks = async (dto: {
+  user_id: string,
+  description: string
+}) => {
+  const { user_id, description } = dto;
 
-  const tasks = await prisma.tasks.findMany({ where: { user_id }, include: { sessions: true, project: true } });
+  const tasks = await prisma.tasks.findMany({
+    where: {
+      user_id,
+      description: {
+        contains: description,
+        mode: 'insensitive',
+      },
+    },
+
+    include: { sessions: true, project: true },
+  });
 
   return tasks;
 };

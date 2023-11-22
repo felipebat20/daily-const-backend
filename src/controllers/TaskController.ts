@@ -10,8 +10,12 @@ export class TaskController {
   static async index(req: Request, res: Response) {
     try {
       const { user: { id = '' } = {} } = req;
+      const { description = '' } = req.query;
 
-      const tasks = await findAllUserTasks({ user_id: id as string });
+      const tasks = await findAllUserTasks({
+        user_id: id as string,
+        description: description as string,
+      });
 
       return res.status(HttpCode.OK).send(await Task.collection(tasks));
     } catch (err) {
