@@ -7,7 +7,11 @@ import { prisma } from '../prisma';
 
 class FucusedSessionsService {
   async findAllUserSessions({ user_id }: { user_id: string }) {
-    const sessions = await prisma.focusedSessions.findMany({ where: { task: { user_id } }, include: { task: true } });
+    const sessions = await prisma.focusedSessions.findMany({
+      where: {
+        task: { user_id } },
+        include: { task: true },
+      });
 
     return sessions;
   }

@@ -5,8 +5,17 @@ import { AppError } from '../exceptions/AppError';
 
 import { prisma } from '../prisma';
 
+enum Descendancy {
+  ASC = 'asc',
+  DESC = 'desc'
+}
+
+interface Sorts {
+  [key: string]: [value: Descendancy]
+}
+
 class StreakService {
-  async findAllStreaks({ user_id }: { user_id: string }) {
+  async findAllStreaks({ user_id, sorts }: { user_id: string, sorts: Sorts }) {
     const streaks = await prisma.streaks.findMany({
       where: {
         user: { id: user_id }
@@ -14,6 +23,7 @@ class StreakService {
       include: {
         projects: true,
       },
+      orderBy: { ...sorts },
     });
 
     return streaks;
