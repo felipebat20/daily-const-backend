@@ -5,12 +5,38 @@ import { AppError } from '../exceptions/AppError';
 
 const streakService = new StreakService();
 
+interface StrekIndexRequest {
+  sort?: string
+}
+
+enum Descendancy {
+  ASC = 'asc',
+  DESC = 'desc'
+}
+
 class StreakController {
   async index(req: Request, res: Response) {
     const { user: { id: user_id = '' } = {}  } = req;
+    const { sort = 'createdAt' } = req.query as StrekIndexRequest;
+    const sorts: { [key: string]: [value: Descendancy] } = {};
+
+    if (sort) {
+      const number_of_sorts = sort.split(',');
+      number_of_sorts.forEach(sort => {
+        let sort_descendancy = 'asc';
+        let sort_key = sort;
+
+        if (sort.startsWith('-')) {
+          sort_descendancy = 'desc';
+          sort_key = sort.replace('-', '');
+        }
+
+        return Object.assign(sorts, { [sort_key]: sort_descendancy });
+      });
+    }
 
     try {
-      const streaks = await streakService.findAllStreaks({ user_id });
+      const streaks = await streakService.findAllStreaks({ user_id, sorts });
 
       return res.status(200).send(streaks);
     } catch (err) {
