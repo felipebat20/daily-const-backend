@@ -209,9 +209,17 @@ class StreakService {
       include: { task: { include: { project: true } } },
     });
 
-    const agg_sessions = groupBy(focused_sessions, (session) => {
-      const created_date = session.createdAt;
-
+    const agg_sessions = groupBy(focused_sessions, ({ createdAt }) => {
+      const date = new Date();
+      const user_timezone_offset = 180;
+      const created_date =  new Date(
+        createdAt.getFullYear(),
+        createdAt.getMonth(),
+        createdAt.getDate(),
+        createdAt.getHours(),
+        createdAt.getMinutes() - (user_timezone_offset - date.getTimezoneOffset()),
+        createdAt.getSeconds(),
+      );
 
       return `${created_date.getFullYear()}-${created_date.getMonth()}-${created_date.getDate()}`;
     });
