@@ -4,6 +4,7 @@ import { HttpCode } from '../enum/httpStatusCodes';
 import { AppError } from '../exceptions/AppError';
 
 import { prisma } from '../prisma';
+import { Project } from 'src/interfaces/IProject';
 
 enum Descendancy {
   ASC = 'asc',
@@ -17,16 +18,54 @@ interface Sorts {
 class StreakService {
   async findAllStreaks({ user_id, sorts }: { user_id: string, sorts: Sorts }) {
     const streaks = await prisma.streaks.findMany({
-      where: {
-        user: { id: user_id }
-      },
-      include: {
-        projects: true,
-      },
+      where: { user: { id: user_id } },
+      include: { projects: true },
       orderBy: { ...sorts },
     });
 
+
+
     return streaks;
+  }
+
+  async getOfensiveFromStreak(streak: any) {
+    const project_ids = streak.projects.map((project: Project) => project.id);
+    const focused_sessions = await prisma.focusedSessions.findMany({
+      where: {
+        task: {
+          project_id: {
+            in: project_ids,
+          }
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      include: { task: { include: { project: true } } },
+    });
+
+    const most_recent_session = focused_sessions[0].createdAt;
+    const parsed_date = new Date(
+      Date.UTC(
+        most_recent_session.getFullYear(),
+        most_recent_session.getMonth(),
+        most_recent_session.getDate()
+      ),
+    );
+
+
+    const today_date = new Date();
+
+    const yesterday = new Date(
+      Date.UTC(
+        today_date.getFullYear(),
+        today_date.getMonth(),
+        today_date.getDate() - 1,
+      ),
+    );
+
+    if (parsed_date < yesterday) {
+      return { ofensive: 0 };
+    }
+    console.log(parsed_date);
   }
 
   async createStreak({ user_id, name, projects }: { user_id: string, name: string, projects: string[] }) {
@@ -56,6 +95,8 @@ class StreakService {
     if (! streak) {
       throw new AppError({ description: 'Streak not found', httpCode: HttpCode.NOT_FOUND });
     }
+
+    this.getOfensiveFromStreak(streak);
 
     return streak;
   }
@@ -211,7 +252,6 @@ class StreakService {
 
     const agg_sessions = groupBy(focused_sessions, (session) => {
       const created_date = session.createdAt;
-
 
       return `${created_date.getFullYear()}-${created_date.getMonth()}-${created_date.getDate()}`;
     });
