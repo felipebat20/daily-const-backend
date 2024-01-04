@@ -4,6 +4,7 @@ import { HttpCode } from '../enum/httpStatusCodes';
 import { AppError } from '../exceptions/AppError';
 
 import { prisma } from '../prisma';
+
 import { Project } from 'src/interfaces/IProject';
 
 enum Descendancy {
@@ -23,12 +24,18 @@ class StreakService {
       orderBy: { ...sorts },
     });
 
+    const new_streaks: any[] = [];
 
+    for (const streak of streaks) {
+      const offensive = await this.getOffensiveFromStreak(streak);
 
-    return streaks;
+      new_streaks.push({ ...streak, offensive });
+    }
+
+    return new_streaks;
   }
 
-  async getOfensiveFromStreak(streak: any) {
+  async getOffensiveFromStreak(streak: any) {
     const project_ids = streak.projects.map((project: Project) => project.id);
     const focused_sessions = await prisma.focusedSessions.findMany({
       where: {
@@ -42,30 +49,65 @@ class StreakService {
       include: { task: { include: { project: true } } },
     });
 
-    const most_recent_session = focused_sessions[0].createdAt;
-    const parsed_date = new Date(
-      Date.UTC(
-        most_recent_session.getFullYear(),
-        most_recent_session.getMonth(),
-        most_recent_session.getDate()
-      ),
-    );
+    if (focused_sessions.length) {
+      const today_date = new Date();
+      const user_timezone_offset = 180;
+      const most_recent_session = focused_sessions[0].createdAt;
 
+      const today_parsed_date = `${today_date.getUTCFullYear()}${today_date.getUTCMonth()}${today_date.getUTCDate()}`;
+      const most_recent_parsed_session = `${most_recent_session.getUTCFullYear()}${most_recent_session.getUTCMonth()}${most_recent_session.getUTCDate()}`;
 
-    const today_date = new Date();
+      const today_is_in_streak = today_parsed_date === most_recent_parsed_session;
 
-    const yesterday = new Date(
-      Date.UTC(
-        today_date.getFullYear(),
-        today_date.getMonth(),
-        today_date.getDate() - 1,
-      ),
-    );
+      const agg_sessions = groupBy(focused_sessions, ({ createdAt }) => {
+        const date = new Date();
+        const user_timezone_offset = 180;
+        const created_date =  new Date(
+          createdAt.getFullYear(),
+          createdAt.getMonth(),
+          createdAt.getDate(),
+          createdAt.getHours(),
+          createdAt.getMinutes() - (user_timezone_offset - date.getTimezoneOffset()),
+          createdAt.getSeconds(),
+        );
 
-    if (parsed_date < yesterday) {
-      return { ofensive: 0 };
+        return `${created_date.getFullYear()}-${created_date.getMonth()}-${created_date.getDate()}`;
+      });
+
+      let offensive = 0;
+
+      Object.entries(agg_sessions).forEach(([key, value], index) => {
+        const created_date = new Date(
+          Date.UTC(
+             value[0].createdAt.getFullYear(),
+             value[0].createdAt.getMonth(),
+             value[0].createdAt.getDate(),
+            0,
+            0 - (user_timezone_offset -  value[0].createdAt.getTimezoneOffset())
+          ),
+        );
+
+        const current_date_of_loop = new Date(
+          Date.UTC(
+            today_date.getFullYear(),
+            today_date.getMonth(),
+            today_date.getDate() - (1 + index),
+            0,
+            0 - (user_timezone_offset - today_date.getTimezoneOffset())
+          ),
+        );
+
+        if (created_date >= current_date_of_loop) {
+          offensive = offensive + 1;
+
+          return;
+        }
+      });
+
+      return { days: offensive, today_is_in_streak };
     }
-    console.log(parsed_date);
+
+    return { days: 0, today_is_in_streak: false };
   }
 
   async createStreak({ user_id, name, projects }: { user_id: string, name: string, projects: string[] }) {
@@ -95,8 +137,6 @@ class StreakService {
     if (! streak) {
       throw new AppError({ description: 'Streak not found', httpCode: HttpCode.NOT_FOUND });
     }
-
-    this.getOfensiveFromStreak(streak);
 
     return streak;
   }
@@ -250,8 +290,17 @@ class StreakService {
       include: { task: { include: { project: true } } },
     });
 
-    const agg_sessions = groupBy(focused_sessions, (session) => {
-      const created_date = session.createdAt;
+    const agg_sessions = groupBy(focused_sessions, ({ createdAt }) => {
+      const date = new Date();
+      const user_timezone_offset = 180;
+      const created_date =  new Date(
+        createdAt.getFullYear(),
+        createdAt.getMonth(),
+        createdAt.getDate(),
+        createdAt.getHours(),
+        createdAt.getMinutes() - (user_timezone_offset - date.getTimezoneOffset()),
+        createdAt.getSeconds(),
+      );
 
       return `${created_date.getFullYear()}-${created_date.getMonth()}-${created_date.getDate()}`;
     });
