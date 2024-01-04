@@ -5,7 +5,7 @@ import { AppError } from '../exceptions/AppError';
 
 import { prisma } from '../prisma';
 
-import { Project } from 'src/interfaces/IProject';
+import { Project } from '../interfaces/IProject';
 
 enum Descendancy {
   ASC = 'asc',
