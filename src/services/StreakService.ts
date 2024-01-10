@@ -35,6 +35,20 @@ class StreakService {
     return new_streaks;
   }
 
+  getDateWithoutTimezoneOffset(current_date: Date) {
+    const date = new Date();
+    const user_timezone_offset = 180;
+
+    return new Date(
+      current_date.getFullYear(),
+      current_date.getMonth(),
+      current_date.getDate(),
+      current_date.getHours(),
+      current_date.getMinutes() - (user_timezone_offset - date.getTimezoneOffset()),
+      current_date.getSeconds(),
+    );
+  }
+
   async getOffensiveFromStreak(streak: any) {
     const project_ids = streak.projects.map((project: Project) => project.id);
     const focused_sessions = await prisma.focusedSessions.findMany({
@@ -50,12 +64,12 @@ class StreakService {
     });
 
     if (focused_sessions.length) {
-      const today_date = new Date();
+      const today_date = this.getDateWithoutTimezoneOffset(new Date());
       const user_timezone_offset = 180;
-      const most_recent_session = focused_sessions[0].createdAt;
+      const most_recent_session = this.getDateWithoutTimezoneOffset(focused_sessions[0].createdAt);
 
-      const today_parsed_date = `${today_date.getUTCFullYear()}${today_date.getUTCMonth()}${today_date.getUTCDate()}`;
-      const most_recent_parsed_session = `${most_recent_session.getUTCFullYear()}${most_recent_session.getUTCMonth()}${most_recent_session.getUTCDate()}`;
+      const today_parsed_date = `${today_date.getFullYear()}${today_date.getMonth()}${today_date.getDate()}`;
+      const most_recent_parsed_session = `${most_recent_session.getFullYear()}${most_recent_session.getMonth()}${most_recent_session.getDate()}`;
 
       const today_is_in_streak = today_parsed_date === most_recent_parsed_session;
 
