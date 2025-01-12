@@ -9,7 +9,6 @@ import routes from './routes';
 dotenv.config();
 
 const app: Application = express();
-
 app.use(cors());
 const port = process.env.APP_PORT || 8000;
 export const server = http.createServer(app);
