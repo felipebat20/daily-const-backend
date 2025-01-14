@@ -17,6 +17,10 @@ interface Sorts {
 }
 
 class StreakService {
+  private getTimeSpent(focused) {
+    return Math.abs(focused.startAt - focused.endAt);
+  }
+
   async findAllStreaks({ user_id, sorts }: { user_id: string, sorts: Sorts }) {
     const streaks = await prisma.streaks.findMany({
       where: { user: { id: user_id } },
@@ -322,7 +326,7 @@ class StreakService {
     const parsed_data = Object.entries(agg_sessions).map(([key, value]) => {
       return {
         date: key,
-        totalFocusTime: value.map(focused => focused.time_spent).reduce((total, current_value) => current_value + total, 0),
+        totalFocusTime: value.map(focused => this.getTimeSpent(focused)).reduce((total, current_value) => current_value + total, 0),
         totalFocusedSessions: value.length,
         totalTasks: uniqBy(value.map(focused => omit(focused.task, 'project')), 'id').length,
         totalProjects: uniqBy(value.map(focused => focused.task.project), 'id').length,

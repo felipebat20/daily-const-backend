@@ -19,17 +19,14 @@ class FucusedSessionsService {
   async createFocusedSession({
     user_id,
     task_id,
-    time_spent,
   }: {
     user_id: string,
     task_id: string,
-    time_spent: number,
   }): Promise<FocusedSessions>
   {
     await this.validateTask({ user_id, task_id });
 
     const data = {
-      time_spent,
       task: { connect: { id: task_id } },
     };
 
@@ -62,14 +59,17 @@ class FucusedSessionsService {
   }
 
   async updateFocusedSession(
-    { user_id, focused_session_id, task_id, time_spent }:
-    { user_id: string, focused_session_id: string, task_id: string, time_spent: number },
+    { user_id, focused_session_id, task_id, startAt, endAt }:
+    { user_id: string, focused_session_id: string, task_id: string, startAt: Date, endAt: Date },
   ): Promise<FocusedSessions|null>
   {
     await this.validateTask({ user_id, task_id });
     await this.validateFocusedSession({ id: focused_session_id });
 
-    const focused_session = await prisma.focusedSessions.update({ where: { id: focused_session_id }, data: { time_spent } });
+    const focused_session = await prisma.focusedSessions.update({
+      where: { id: focused_session_id },
+      data: { startAt, endAt }
+    });
 
     return focused_session;
   }

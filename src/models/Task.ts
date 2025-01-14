@@ -23,10 +23,14 @@ class Task {
     this.total_time_spent = this.getTotalTimeSpent;
   }
 
+  private getSessionTimeSpent(session) {
+    return Math.abs(Math.abs(session.startAt - session.endAt));
+  }
+
   public get getTotalTimeSpent() {
     if (this.sessions.length) {
       return this.sessions
-        .map(session => session.time_spent)
+        .map(session => this.getSessionTimeSpent(session))
         .reduce((total, current_value) => current_value + total, 0);
     }
 
