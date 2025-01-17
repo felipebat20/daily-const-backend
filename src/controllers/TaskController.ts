@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
 
-import { createTask, deleteTask, findAllUserTasks, findTask, updateTask } from '../services/TaskService';
 import { HttpCode } from '../enum/httpStatusCodes';
-import { errorHandler } from '../exceptions/ErrorHandler';
+
 import { AppError } from '../exceptions/AppError';
+import { errorHandler } from '../exceptions/ErrorHandler';
+
+import { createTask, deleteTask, findAllUserTasks, findTask, updateTask } from '../services/TaskService';
 import { Task } from '../models/Task';
 
 export class TaskController {

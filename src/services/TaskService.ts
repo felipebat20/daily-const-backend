@@ -95,6 +95,9 @@ export const createTask = async (dto: TaskDto) => {
       description,
       user_id,
       project_id,
+      sessions: {
+        create: [{ createdAt: new Date() }]
+      }
     },
     include: { sessions: true, project: true },
   });

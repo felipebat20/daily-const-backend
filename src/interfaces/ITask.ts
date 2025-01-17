@@ -10,4 +10,5 @@ export interface TaskInterface {
   user_id: string
   createdAt: Date
   updatedAt: Date
+  last_session_started_at?: Date
 }
