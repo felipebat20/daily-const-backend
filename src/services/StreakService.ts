@@ -29,7 +29,7 @@ class StreakService {
       orderBy: { ...sorts },
     });
 
-    const new_streaks: any[] = [];
+    const new_streaks: { projects: Project[], offensive: object }[] = [];
 
     for (const streak of streaks) {
       const offensive = await this.getOffensiveFromStreak(streak);
@@ -54,7 +54,7 @@ class StreakService {
     );
   }
 
-  async getOffensiveFromStreak(streak: any) {
+  async getOffensiveFromStreak(streak: { projects: Project[] }) {
     const project_ids = streak.projects.map((project: Project) => project.id);
     const focused_sessions = await prisma.focusedSessions.findMany({
       where: {
@@ -95,7 +95,7 @@ class StreakService {
 
       let offensive = 0;
 
-      Object.entries(agg_sessions).forEach(([key, value], index) => {
+      Object.entries(agg_sessions).forEach(([key]) => {
         const next_created_date = new Date(
           Date.UTC(
             parseInt(key.split('-')[0]),

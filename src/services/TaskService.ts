@@ -131,9 +131,6 @@ export const initSession = async (dto: FocusedSessionDto) => {
 export const stopSession = async (dto: FocusedSessionDto) => {
   const { endAt, task_id } = dto;
 
-  console.log(endAt);
-
-
   await prisma.focusedSessions.updateMany({
     where: {
       task_id: task_id,
