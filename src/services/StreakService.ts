@@ -1,4 +1,5 @@
 import { groupBy, omit, uniqBy } from 'lodash';
+import { isTomorrow } from 'date-fns';
 
 import { HttpCode } from '../enum/httpStatusCodes';
 import { AppError } from '../exceptions/AppError';
@@ -18,7 +19,7 @@ interface Sorts {
 
 class StreakService {
   private getTimeSpent(focused) {
-    return Math.abs(focused.startAt - focused.endAt);
+    return Math.abs(focused.startAt - (focused.endAt  || new Date())) / 1000;
   }
 
   async findAllStreaks({ user_id, sorts }: { user_id: string, sorts: Sorts }) {
@@ -63,14 +64,13 @@ class StreakService {
           }
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'asc' },
       include: { task: { include: { project: true } } },
     });
 
     if (focused_sessions.length) {
-      const today_date = this.getDateWithoutTimezoneOffset(new Date());
-      const user_timezone_offset = 180;
-      const most_recent_session = this.getDateWithoutTimezoneOffset(focused_sessions[0].createdAt);
+      const today_date = new Date();
+      const most_recent_session = focused_sessions[focused_sessions.length - 1].createdAt;
 
       const today_parsed_date = `${today_date.getFullYear()}${today_date.getMonth()}${today_date.getDate()}`;
       const most_recent_parsed_session = `${most_recent_session.getFullYear()}${most_recent_session.getMonth()}${most_recent_session.getDate()}`;
@@ -79,6 +79,7 @@ class StreakService {
 
       const agg_sessions = groupBy(focused_sessions, ({ createdAt }) => {
         const date = new Date();
+        //TODO: get user timezone
         const user_timezone_offset = 180;
         const created_date =  new Date(
           createdAt.getFullYear(),
@@ -95,31 +96,27 @@ class StreakService {
       let offensive = 0;
 
       Object.entries(agg_sessions).forEach(([key, value], index) => {
-        const created_date = new Date(
+        const next_created_date = new Date(
           Date.UTC(
-             value[0].createdAt.getFullYear(),
-             value[0].createdAt.getMonth(),
-             value[0].createdAt.getDate(),
+            parseInt(key.split('-')[0]),
+            parseInt(key.split('-')[1]),
+            parseInt(key.split('-')[2]) + 1,
             0,
-            0 - (user_timezone_offset -  value[0].createdAt.getTimezoneOffset())
+            0
           ),
         );
 
-        const current_date_of_loop = new Date(
-          Date.UTC(
-            today_date.getFullYear(),
-            today_date.getMonth(),
-            today_date.getDate() - (1 + index),
-            0,
-            0 - (user_timezone_offset - today_date.getTimezoneOffset())
-          ),
-        );
+        const next_date_in_loop = !! Object.keys(agg_sessions).find(date_str => {
+          return date_str === `${next_created_date.getFullYear()}-${next_created_date.getMonth()}-${next_created_date.getDate()}`;
+        });
 
-        if (created_date >= current_date_of_loop) {
+        if (next_date_in_loop || isTomorrow(next_created_date)) {
           offensive = offensive + 1;
 
           return;
         }
+
+        offensive = 0;
       });
 
       return { days: offensive, today_is_in_streak };
@@ -140,7 +137,7 @@ class StreakService {
       include: { projects: true },
     });
 
-    return streak;
+    return { ...streak, offensive: this.getOffensiveFromStreak(streak) };
   }
 
   async findStreak({ user_id, streak_id }: { streak_id: string, user_id: string }) {
@@ -156,7 +153,7 @@ class StreakService {
       throw new AppError({ description: 'Streak not found', httpCode: HttpCode.NOT_FOUND });
     }
 
-    return streak;
+    return { ...streak, offensive: this.getOffensiveFromStreak(streak) };
   }
 
   async updateStreak({ user_id, streak_id, name, projects }: { streak_id: string, user_id: string, name: string, projects: undefined | string[] }) {
@@ -209,7 +206,7 @@ class StreakService {
       include: { projects: true },
     });
 
-    return updated_streak;
+    return { ...updated_streak, offensive: this.getOffensiveFromStreak(streak) };
   }
 
   async deleteStreak({ user_id, streak_id }: { streak_id: string, user_id: string }) {
@@ -322,6 +319,7 @@ class StreakService {
 
       return `${created_date.getFullYear()}-${created_date.getMonth()}-${created_date.getDate()}`;
     });
+
 
     const parsed_data = Object.entries(agg_sessions).map(([key, value]) => {
       return {

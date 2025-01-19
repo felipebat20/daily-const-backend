@@ -10,6 +10,12 @@ interface TaskDto {
   project_id: string,
 }
 
+interface FocusedSessionDto {
+  task_id: string,
+  startAt?: Date,
+  endAt?: Date,
+}
+
 export const findAllUserTasks = async (dto: {
   user_id: string,
   description: string
@@ -103,4 +109,49 @@ export const createTask = async (dto: TaskDto) => {
   });
 
   return tasks;
+};
+
+export const initSession = async (dto: FocusedSessionDto) => {
+  const { startAt, task_id } = dto;
+
+  await prisma.focusedSessions.create({ data: { task: { connect: { id: task_id } }, startAt } });
+  const task = await prisma.tasks.findUnique({ where: { id: task_id }, include: { sessions: true, project: true } });
+
+
+  if (! task) {
+    throw new AppError({
+      description: 'Task not found',
+      httpCode: HttpCode.NOT_FOUND,
+    });
+  }
+
+  return task;
+};
+
+export const stopSession = async (dto: FocusedSessionDto) => {
+  const { endAt, task_id } = dto;
+
+  console.log(endAt);
+
+
+  await prisma.focusedSessions.updateMany({
+    where: {
+      task_id: task_id,
+      endAt: { equals: null }
+    },
+
+    data: { endAt },
+  });
+
+  const task = await prisma.tasks.findUnique({ where: { id: task_id }, include: { sessions: true, project: true } });
+
+
+  if (! task) {
+    throw new AppError({
+      description: 'Task not found',
+      httpCode: HttpCode.NOT_FOUND,
+    });
+  }
+
+  return task;
 };

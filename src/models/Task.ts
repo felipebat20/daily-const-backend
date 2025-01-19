@@ -10,7 +10,7 @@ class Task {
   public createdAt: Date;
   public updatedAt: Date;
   public total_time_spent: number;
-  public last_session_started_at: Date | null;
+  public lastSessionStartedAt: Date | null;
   public sessions: SessionInterface[];
   public project: Project | null;
 
@@ -22,7 +22,7 @@ class Task {
     this.sessions = task.sessions || [];
     this.project = task.project;
     this.total_time_spent = this.getTotalTimeSpent;
-    this.last_session_started_at = this.getLastSessionStartedAt;
+    this.lastSessionStartedAt = this.getLastSessionStartedAt;
   }
 
   private getSessionTimeSpent(session) {

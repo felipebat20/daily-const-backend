@@ -5,7 +5,7 @@ import { HttpCode } from '../enum/httpStatusCodes';
 import { AppError } from '../exceptions/AppError';
 import { errorHandler } from '../exceptions/ErrorHandler';
 
-import { createTask, deleteTask, findAllUserTasks, findTask, updateTask } from '../services/TaskService';
+import { createTask, deleteTask, findAllUserTasks, findTask, initSession, stopSession, updateTask } from '../services/TaskService';
 import { Task } from '../models/Task';
 
 export class TaskController {
@@ -37,6 +37,46 @@ export class TaskController {
       const task = await findTask({
         user_id: id as string,
         task_id,
+      });
+
+      return res.status(HttpCode.OK).send(await new Task(task));
+    } catch(err) {
+      if (err instanceof AppError) {
+        return res.status(err.httpCode).send({ message: err.message });
+      }
+
+      return res.status(500).send({ message: 'internal server error' });
+    }
+  }
+
+  static async inProgress(req: Request, res: Response) {
+    try {
+      const { id: task_id } = req.params;
+      const { startAt } = req.body;
+
+      const task = await initSession({
+        task_id,
+        startAt,
+      });
+
+      return res.status(HttpCode.OK).send(await new Task(task));
+    } catch(err) {
+      if (err instanceof AppError) {
+        return res.status(err.httpCode).send({ message: err.message });
+      }
+
+      return res.status(500).send({ message: 'internal server error' });
+    }
+  }
+
+  static async stopWatch(req: Request, res: Response) {
+    try {
+      const { id: task_id } = req.params;
+      const { endAt } = req.body;
+
+      const task = await stopSession({
+        task_id,
+        endAt,
       });
 
       return res.status(HttpCode.OK).send(await new Task(task));
