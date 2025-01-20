@@ -1,5 +1,5 @@
-import { groupBy, omit, uniqBy } from 'lodash';
-import { isTomorrow } from 'date-fns';
+import { difference, groupBy, omit, uniqBy } from 'lodash';
+import { differenceInDays, isTomorrow } from 'date-fns';
 
 import { HttpCode } from '../enum/httpStatusCodes';
 import { AppError } from '../exceptions/AppError';
@@ -72,10 +72,7 @@ class StreakService {
       const today_date = new Date();
       const most_recent_session = focused_sessions[focused_sessions.length - 1].createdAt;
 
-      const today_parsed_date = `${today_date.getFullYear()}${today_date.getMonth()}${today_date.getDate()}`;
-      const most_recent_parsed_session = `${most_recent_session.getFullYear()}${most_recent_session.getMonth()}${most_recent_session.getDate()}`;
-
-      const today_is_in_streak = today_parsed_date === most_recent_parsed_session;
+      const today_is_in_streak = differenceInDays(today_date, most_recent_session) < 1;
 
       const agg_sessions = groupBy(focused_sessions, ({ createdAt }) => {
         const date = new Date();
@@ -110,7 +107,7 @@ class StreakService {
           return date_str === `${next_created_date.getFullYear()}-${next_created_date.getMonth()}-${next_created_date.getDate()}`;
         });
 
-        if (next_date_in_loop || isTomorrow(next_created_date)) {
+        if (next_date_in_loop || differenceInDays(today_date, next_created_date) < 1) {
           offensive = offensive + 1;
 
           return;
