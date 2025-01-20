@@ -1,5 +1,5 @@
-import { difference, groupBy, omit, uniqBy } from 'lodash';
-import { differenceInDays, isTomorrow } from 'date-fns';
+import { groupBy, omit, uniqBy } from 'lodash';
+import { differenceInDays } from 'date-fns';
 
 import { HttpCode } from '../enum/httpStatusCodes';
 import { AppError } from '../exceptions/AppError';
