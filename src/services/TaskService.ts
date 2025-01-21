@@ -31,6 +31,7 @@ export const findAllUserTasks = async (dto: {
       },
     },
 
+    orderBy: [{ createdAt: 'desc' }],
     include: { sessions: true, project: true },
   });
 
